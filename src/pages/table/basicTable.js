@@ -1,12 +1,15 @@
 import React, {Component} from 'react';
 import {Table,Card,Modal,Button,message} from 'antd';
+import Utils from './../../utils/utils';
 import axios from './../../axios/index'
 
 class basicTable extends Component {
   state={
     dataSource2:[]
   }
-
+  params = {
+    page:1
+  }
   componentWillMount() {
     this.setState({
       dataSource2: []
@@ -18,25 +21,32 @@ class basicTable extends Component {
       url:'/get/basicTable',
       data: {
         params: {
-          page: 1,
+          page: this.params.page,
         }
       }
-    }).then(response=> {
-      if(response.code == 0){
+    }).then(res=> {
+      res.result.list.map((item, index) => {
+        item.key = index;
+      })
+      if(res.code == 0){
         this.setState({
-          dataSource2:response.result.list,
+          dataSource2:res.result.list,
           selectedRowKeys: [],
-          selectedRows: null
+          selectedRows: null,
+          pagination: Utils.pagination(res,(current)=>{
+            this.params.page = current;
+            this.request();
+          })
         })
       }
     })
   }
   onClick=(record,index)=>{
     let rowKey = []
-    rowKey.push(record.key)
+    rowKey.push(record.id)
     Modal.info({
       title:'信息',
-      content:`用户名：${record.name},用户key：${record.key}`
+      content:`用户名：${record.name},用户key：${record.id}`
     })
     this.setState({
       selectedRowKeys: rowKey
@@ -56,13 +66,13 @@ class basicTable extends Component {
   render() {
     const dataSource = [
       {
-        key: '1',
+        id: '1',
         name: '胡彦斌',
         age: 32,
         address: '西湖区湖底公园1号',
       },
       {
-        key: '2',
+        id: '2',
         name: '胡彦祖',
         age: 42,
         address: '西湖区湖底公园1号',
@@ -70,9 +80,9 @@ class basicTable extends Component {
     ];
     const columns = [
       {
-        title: 'key',
-        dataIndex: 'key',
-        key: 'key',
+        title: 'id',
+        dataIndex: 'id',
+        key: 'id',
       },
       {
         title: '姓名',
@@ -109,46 +119,62 @@ class basicTable extends Component {
       selectedRowKeys: this.state.selectedRowKeys
     }
     // Mock-单选2
+    const { selectedRowKeys } = this.state;
     const rowCheckSelection = {
-      onChange: (selectedRowKeys, selectedRows) => {
+      type: 'checkbox',
+      selectedRowKeys,
+      onChange:(selectedRowKeys,selectedRows)=>{
         this.setState({
           selectedRowKeys,
           selectedRows
         })
-      },
-    };
+      }
+    }
 
     return (
       <div>
-        {/*基础表格*/}
-        <Card title="基础表格">
-          <Table dataSource={dataSource} columns={columns} bordered/>
-        </Card>
-        {/*动态数据渲染表格-Mock*/}
-        <Card title="动态数据渲染表格-Mock" style={{margin:'10px 0'}}>
-          <Table
-            bordered
-            columns={columns}
-            dataSource={this.state.dataSource2}
-            pagination={false}
-          />
-        </Card>
-        {/*Mock-单选(显示行信息)*/}
-        <Card title="Mock-单选" style={{margin:'10px 0'}}>
-          <Table
-            bordered
-            columns={columns}
-            dataSource={this.state.dataSource2}
-            rowSelection={rowSelection}
-            pagination={false}
-            onRow={(record,index) => {
-              return {
-                onClick: () => {this.onClick(record,index)}, // 点击行
-              };
-            }}
-          />
-        </Card>
-        {/*Mock-单选(删除)*/}
+        {/*/!*基础表格*!/*/}
+        {/*<Card title="基础表格">*/}
+          {/*<Table dataSource={dataSource} columns={columns} bordered/>*/}
+        {/*</Card>*/}
+        {/*/!*动态数据渲染表格-Mock*!/*/}
+        {/*<Card title="动态数据渲染表格-Mock" style={{margin:'10px 0'}}>*/}
+          {/*<Table*/}
+            {/*bordered*/}
+            {/*columns={columns}*/}
+            {/*dataSource={this.state.dataSource2}*/}
+            {/*pagination={false}*/}
+          {/*/>*/}
+        {/*</Card>*/}
+        {/*/!*Mock-单选(显示行信息)*!/*/}
+        {/*<Card title="Mock-单选" style={{margin:'10px 0'}}>*/}
+          {/*<Table*/}
+            {/*bordered*/}
+            {/*columns={columns}*/}
+            {/*dataSource={this.state.dataSource2}*/}
+            {/*rowSelection={rowSelection}*/}
+            {/*pagination={false}*/}
+            {/*onRow={(record,index) => {*/}
+              {/*return {*/}
+                {/*onClick: () => {this.onClick(record,index)}, // 点击行*/}
+              {/*};*/}
+            {/*}}*/}
+          {/*/>*/}
+        {/*</Card>*/}
+        {/*/!*Mock-单选(删除)*!/*/}
+        {/*<Card title="Mock-单选" style={{ margin: '10px 0' }}>*/}
+          {/*<div style={{marginBottom:10}}>*/}
+            {/*<Button onClick={this.handleDelete}>删除</Button>*/}
+          {/*</div>*/}
+          {/*<Table*/}
+            {/*bordered*/}
+            {/*rowSelection={rowCheckSelection}*/}
+            {/*columns={columns}*/}
+            {/*dataSource={this.state.dataSource2}*/}
+            {/*pagination={false}*/}
+          {/*/>*/}
+        {/*</Card>*/}
+
         <Card title="Mock-单选" style={{ margin: '10px 0' }}>
           <div style={{marginBottom:10}}>
             <Button onClick={this.handleDelete}>删除</Button>
@@ -158,7 +184,21 @@ class basicTable extends Component {
             rowSelection={rowCheckSelection}
             columns={columns}
             dataSource={this.state.dataSource2}
-            pagination={false}
+            pagination={this.state.pagination
+              // {
+              //   defaultCurrent:6,
+              //   total: 500,
+              //   // current:3,
+              //   pageSize:10,
+              //   showTotal:()=>{
+              //     return `共500条`
+              //   },
+              //   showQuickJumper:true,
+              //   onChange:(current)=>{
+              //     callback(current)
+              //   },
+              // }
+            }
           />
         </Card>
       </div>
