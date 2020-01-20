@@ -16,6 +16,8 @@ class basicTable extends Component {
     })
     this.request();
   }
+
+  // 查询请求
   request = () =>{
     axios.ajax({
       url:'/get/basicTable',
@@ -31,8 +33,8 @@ class basicTable extends Component {
       if(res.code == 0){
         this.setState({
           dataSource2:res.result.list,
-          selectedRowKeys: [],
-          selectedRows: null,
+          selectedRowKeys: [], // 清空表格复选框选中状态
+          selectedRows: null, // 清空表格复选框选中数据
           pagination: Utils.pagination(res,(current)=>{
             this.params.page = current;
             this.request();
@@ -41,6 +43,8 @@ class basicTable extends Component {
       }
     })
   }
+
+  // “Mock-单选展示”的行点击事件
   onClick=(record,index)=>{
     let rowKey = []
     rowKey.push(record.id)
@@ -52,6 +56,8 @@ class basicTable extends Component {
       selectedRowKeys: rowKey
     })
   }
+
+  //“Mock-单选删除”的删除操作
   handleDelete=()=>{
     Modal.confirm({
       title:'删除提示',
@@ -64,6 +70,7 @@ class basicTable extends Component {
 
   }
   render() {
+    // 基础表格
     const dataSource = [
       {
         id: '1',
@@ -113,12 +120,13 @@ class basicTable extends Component {
       },
     ];
 
-    // Mock-单选1
+    // Mock-单选展示
     const rowSelection = {
       type:'radio',
       selectedRowKeys: this.state.selectedRowKeys
     }
-    // Mock-单选2
+
+    // Mock-单选删除
     const { selectedRowKeys } = this.state;
     const rowCheckSelection = {
       type: 'checkbox',
@@ -133,48 +141,38 @@ class basicTable extends Component {
 
     return (
       <div>
-        {/*/!*基础表格*!/*/}
-        {/*<Card title="基础表格">*/}
-          {/*<Table dataSource={dataSource} columns={columns} bordered/>*/}
-        {/*</Card>*/}
-        {/*/!*动态数据渲染表格-Mock*!/*/}
-        {/*<Card title="动态数据渲染表格-Mock" style={{margin:'10px 0'}}>*/}
-          {/*<Table*/}
-            {/*bordered*/}
-            {/*columns={columns}*/}
-            {/*dataSource={this.state.dataSource2}*/}
-            {/*pagination={false}*/}
-          {/*/>*/}
-        {/*</Card>*/}
-        {/*/!*Mock-单选(显示行信息)*!/*/}
-        {/*<Card title="Mock-单选" style={{margin:'10px 0'}}>*/}
-          {/*<Table*/}
-            {/*bordered*/}
-            {/*columns={columns}*/}
-            {/*dataSource={this.state.dataSource2}*/}
-            {/*rowSelection={rowSelection}*/}
-            {/*pagination={false}*/}
-            {/*onRow={(record,index) => {*/}
-              {/*return {*/}
-                {/*onClick: () => {this.onClick(record,index)}, // 点击行*/}
-              {/*};*/}
-            {/*}}*/}
-          {/*/>*/}
-        {/*</Card>*/}
-        {/*/!*Mock-单选(删除)*!/*/}
-        {/*<Card title="Mock-单选" style={{ margin: '10px 0' }}>*/}
-          {/*<div style={{marginBottom:10}}>*/}
-            {/*<Button onClick={this.handleDelete}>删除</Button>*/}
-          {/*</div>*/}
-          {/*<Table*/}
-            {/*bordered*/}
-            {/*rowSelection={rowCheckSelection}*/}
-            {/*columns={columns}*/}
-            {/*dataSource={this.state.dataSource2}*/}
-            {/*pagination={false}*/}
-          {/*/>*/}
-        {/*</Card>*/}
+        {/*基础表格*/}
+        <Card title="基础表格">
+          <Table dataSource={dataSource} columns={columns} bordered/>
+        </Card>
 
+        {/*动态数据渲染表格-Mock*/}
+        <Card title="动态数据渲染表格-Mock" style={{margin:'10px 0'}}>
+          <Table
+            bordered
+            columns={columns}
+            dataSource={this.state.dataSource2}
+            pagination={false}
+          />
+        </Card>
+
+        {/*Mock-单选(显示行信息)*/}
+        <Card title="Mock-单选" style={{margin:'10px 0'}}>
+          <Table
+            bordered
+            columns={columns}
+            dataSource={this.state.dataSource2}
+            rowSelection={rowSelection}
+            pagination={false}
+            onRow={(record,index) => {
+              return {
+                onClick: () => {this.onClick(record,index)}, // 点击行
+              };
+            }}
+          />
+        </Card>
+
+        {/*Mock-单选(删除)*/}
         <Card title="Mock-单选" style={{ margin: '10px 0' }}>
           <div style={{marginBottom:10}}>
             <Button onClick={this.handleDelete}>删除</Button>
@@ -184,21 +182,21 @@ class basicTable extends Component {
             rowSelection={rowCheckSelection}
             columns={columns}
             dataSource={this.state.dataSource2}
-            pagination={this.state.pagination
-              // {
-              //   defaultCurrent:6,
-              //   total: 500,
-              //   // current:3,
-              //   pageSize:10,
-              //   showTotal:()=>{
-              //     return `共500条`
-              //   },
-              //   showQuickJumper:true,
-              //   onChange:(current)=>{
-              //     callback(current)
-              //   },
-              // }
-            }
+            pagination={false}
+          />
+        </Card>
+
+        {/*Mock-分页*/}
+        <Card title="Mock-单选" style={{ margin: '10px 0' }}>
+          <div style={{marginBottom:10}}>
+            <Button onClick={this.handleDelete}>删除</Button>
+          </div>
+          <Table
+            bordered
+            rowSelection={rowCheckSelection}
+            columns={columns}
+            dataSource={this.state.dataSource2}
+            pagination={this.state.pagination}
           />
         </Card>
       </div>
