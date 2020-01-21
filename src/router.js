@@ -15,6 +15,7 @@ import Carousel from './pages/ui/carousel'
 import FormLogin from './pages/form/login'
 import FormRegister from './pages/form/register'
 import basicTable from './pages/table/basicTable'
+import HighTable from './pages/table/highTable'
 
 // import NoMatch from './pages/nomatch'
 
@@ -39,6 +40,7 @@ class ERoute extends Component {
                 <Route path="/form/login" component={FormLogin} />
                 <Route path="/form/reg" component={FormRegister} />
                 <Route path="/table/basic" component={basicTable} />
+                <Route path="/table/high" component={HighTable} />
                 <Redirect to="/home" />
               </Switch>
             </Admin>
